@@ -13,24 +13,25 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get('/', (req, res) =>
-  res.sendFile(path.join(__dirname, 'public/db/index.html'))
+    res.sendFile(path.join(__dirname, 'public/db/index.html'))
 );
+
 app.get('/notes', (req, res) =>
-  res.sendFile(path.join(__dirname, 'public/db/notes.html'))
+    res.sendFile(path.join(__dirname, 'public/db/notes1.html'))
 );
 
 app.get('/api/notes', (req, res) => {
-   
+
     notesData.push(req.body);
 
     fs.writeFile('./db/db.json', JSON.stringify(notesData), (err) => {
         err ? res.json(err) : res.send('saved');
     })
-    });
+});
 
 
-  app.post('/api/notes', (req, res) => {
+app.post('/api/notes', (req, res) => {
     res.json(notesData)
-    });
+});
 
 app.listen(PORT);
