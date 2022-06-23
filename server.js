@@ -2,29 +2,32 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 
-const app = express();
-
 const PORT = process.env.PORT || 3001;
 
-const notesData = require('public/db/db.json')
+const app = express();
 
+const notesData = require('./db/db.json')
+
+app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use(express.static('public'));
-
-// Fallback route for when a user attempts to visit routes that don't exist
-app.get('*', (req, res) =>
-  res.send('public/db/index.html')
-);
 
 app.get('/notes', (req, res) =>
 res.sendFile(path.join(__dirname, 'public/db/notes.html'))
 );
 
+app.get('/', (req, res) =>
+  res.sendFile(path.join(__dirname, 'public/db/index.html'))
+);
 
 app.get('/api/notes', (req, res) => {
-    res.json(notesData)
+   
+    notesData.push(req.body);
+
+    fs.writeFile('./db/db.json', JSON.stringify(notesData), (err) => {
+        err ? res.json(err) : res.send('saved');
+    })
     });
 
 
@@ -32,6 +35,4 @@ app.get('/api/notes', (req, res) => {
     res.json(notesData)
     });
 
-app.listen(PORT, () =>
-  console.log(`Example app listening at http://localhost:${PORT}`)
-);
+app.listen(PORT);
